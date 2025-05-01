@@ -1,0 +1,32 @@
+[gd_scene load_steps=2 format=3 uid="uid://bcvdb8rnrn1hp"]
+
+[ext_resource type="Script" uid="uid://bf4cwuwyw41hv" path="res://fsm_state_node.gd" id="1_6dri0"]
+
+[node name="FsmStateNode" type="ColorRect"]
+custom_minimum_size = Vector2(100, 50)
+offset_right = 122.0
+offset_bottom = 73.0
+focus_mode = 1
+color = Color(0, 0.503497, 0.462659, 1)
+script = ExtResource("1_6dri0")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+offset_right = 122.0
+offset_bottom = 72.0
+
+[node name="ColorRect" type="ColorRect" parent="VBoxContainer"]
+custom_minimum_size = Vector2(0, 10)
+layout_mode = 2
+mouse_filter = 1
+color = Color(0.335628, 0.822868, 0.702733, 1)
+
+[node name="Label" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+mouse_filter = 1
+text = "State Name"
+horizontal_alignment = 1
+
+[node name="Button" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Add Transition"

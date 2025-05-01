@@ -1,0 +1,33 @@
+[gd_scene load_steps=4 format=3 uid="uid://cwpwhkmiy6vi5"]
+
+[ext_resource type="Script" uid="uid://0i4em1jn6jo7" path="res://fsm_graph.gd" id="1_ml1ug"]
+[ext_resource type="PackedScene" uid="uid://es63blnicxor" path="res://fsm_transition.tscn" id="2_rb3d8"]
+[ext_resource type="PackedScene" uid="uid://bcvdb8rnrn1hp" path="res://fsm_state_node.tscn" id="3_rdet6"]
+
+[node name="FsmGraph" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("1_ml1ug")
+
+[node name="FsmTransition" parent="." node_paths=PackedStringArray("from_node", "to_node") instance=ExtResource("2_rb3d8")]
+layout_mode = 0
+offset_left = 432.0
+offset_top = 287.0
+offset_right = 617.0
+offset_bottom = 376.0
+from_node = NodePath("../Run")
+to_node = NodePath("../Idle")
+
+[node name="Run" parent="." instance=ExtResource("3_rdet6")]
+layout_mode = 0
+offset_left = 279.0
+offset_top = 238.0
+offset_right = 401.0
+offset_bottom = 311.0
+
+[node name="Idle" parent="." instance=ExtResource("3_rdet6")]
+layout_mode = 0
+offset_left = 723.0
+offset_top = 300.0
+offset_right = 845.0
+offset_bottom = 373.0
