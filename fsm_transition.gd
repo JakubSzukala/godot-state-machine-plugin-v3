@@ -7,9 +7,7 @@ var drag_mouse_offset = null
 @export var from_node: FsmStateNode
 @export var to_node: FsmStateNode
 var from: Vector2
-var from_angle: float
 var to: Vector2
-var to_angle: float
 var center: Vector2
 var r: float
 var r_scale: float = 1.0:
@@ -57,11 +55,16 @@ func _process(_delta: float) -> void:
 	center = Vector2(x, y)
 
 	# Express positions in coordinate system with origin at circle center and
-	# calculate angle between them, in the same coordinate space
-	from_angle = (from - center).angle()
-	to_angle = (to - center).angle()
-
-	var mid_angle = 0.5 * (to_angle - from_angle)
+	# calculate angle between them, in the same coordinate space. We then
+	# calculate vector halfway between these angles and shift it back to global
+	# coordinate system
+	var angles = {
+		"start" : (from - center).angle(),
+		"end"   : (to - center).angle()
+	}
+	angles = _equivalent_positive(angles["start"], angles["end"])
+	angles = _clockwise(angles["start"], angles["end"])
+	var mid_angle = 0.5 * (angles["end"] - angles["start"])
 	var mid_vec: Vector2 = (from - center)
 	mid_vec = mid_vec.rotated(mid_angle)
 	global_position = mid_vec + center
@@ -69,7 +72,12 @@ func _process(_delta: float) -> void:
 
 
 func _draw() -> void:
-	var angles = _equivalent_positive(from_angle, to_angle)
+	var angles = {
+		"start" : (from - center).angle(),
+		"end"   : (to - center).angle()
+	}
+	angles = _equivalent_positive(angles["start"], angles["end"])
+	angles = _clockwise(angles["start"], angles["end"])
 	draw_arc(center - global_position, r, angles["start"], angles["end"], 1000, Color.AQUAMARINE, 1, true)
 	draw_circle(center - global_position, 5, Color.CORAL)
 
@@ -78,13 +86,12 @@ func _equivalent_positive(start: float, end: float) -> Dictionary:
 	# Make sure that angles are positive
 	if end < 0:
 		end = end + 2 * PI
-	if from_angle < 0:
+	if start < 0:
 		start = start + 2 * PI
+	return {"start" : start, "end" : end}
 
-	# We always want to draw from "from" to "to" in clockwise direction
-	# This ensures consistency:
-	# - going from left to right is always upper arc
-	# - going from right to left is always bottom arc 
+
+func _clockwise(start: float, end: float) -> Dictionary:
 	if start > end:
 		end = end + 2 * PI
 	return {"start" : start, "end" : end}
