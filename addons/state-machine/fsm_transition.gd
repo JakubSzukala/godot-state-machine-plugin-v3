@@ -5,8 +5,8 @@ extends ColorRect
 
 var drag_mouse_offset = null
 
-@export var from_node: FsmStateNode
-@export var to_node: FsmStateNode
+var from_node: FsmStateNode
+var to_node: Node
 var from: Vector2
 var to: Vector2
 var center: Vector2
@@ -45,8 +45,8 @@ func _process(_delta: float) -> void:
 	if not from_node and not to_node:
 		return
 
-	from = from_node.global_position
-	to = to_node.global_position
+	from = from_node.get_global_center() #from_node.global_position
+	to = to_node.get_global_center() # to_node.global_position
 
 	# Calculate radius of a circle encapsulating both points, it may be scaled by user
 	r = from.distance_to(to) * 0.5 * r_scale
