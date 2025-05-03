@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://cwpwhkmiy6vi5"]
 
-[ext_resource type="Script" uid="uid://0i4em1jn6jo7" path="res://fsm_graph.gd" id="1_ml1ug"]
+[ext_resource type="Script" uid="uid://0i4em1jn6jo7" path="res://addons/state-machine/fsm_graph.gd" id="1_ml1ug"]
 
 [node name="FsmGraph" type="Control"]
 layout_mode = 3

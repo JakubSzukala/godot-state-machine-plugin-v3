@@ -8,15 +8,15 @@ script = ExtResource("1_0x6bt")
 states_view = {
 "Idle": {
 "name": "Idle",
-"position": Vector2(94, 44)
+"position": Vector2(60, 63)
 },
 "Run": {
 "name": "Run",
-"position": Vector2(319, 136)
+"position": Vector2(143, 154)
 },
 "Run2": {
 "name": "Run2",
-"position": Vector2(86, 208)
+"position": Vector2(221, 242)
 }
 }
 metadata/_custom_type_script = "uid://j5ey4g6t6apf"
