@@ -1,0 +1,28 @@
+[gd_scene load_steps=3 format=3 uid="uid://bmn0myjrrlw4j"]
+
+[ext_resource type="Script" uid="uid://j5ey4g6t6apf" path="res://addons/state-machine/fsm.gd" id="1_0x6bt"]
+[ext_resource type="PackedScene" uid="uid://cjgj2svoakpjs" path="res://addons/state-machine/dummy_state.tscn" id="2_n67wk"]
+
+[node name="Fsm" type="Node"]
+script = ExtResource("1_0x6bt")
+states_view = {
+"Idle": {
+"name": "Idle",
+"position": Vector2(94, 44)
+},
+"Run": {
+"name": "Run",
+"position": Vector2(319, 136)
+},
+"Run2": {
+"name": "Run2",
+"position": Vector2(86, 208)
+}
+}
+metadata/_custom_type_script = "uid://j5ey4g6t6apf"
+
+[node name="Idle" parent="." instance=ExtResource("2_n67wk")]
+
+[node name="Run" parent="." instance=ExtResource("2_n67wk")]
+
+[node name="Run2" parent="." instance=ExtResource("2_n67wk")]

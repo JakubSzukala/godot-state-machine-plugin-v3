@@ -14,3 +14,7 @@ config/name="State Machine v3"
 run/main_scene="uid://cab7riqq160m2"
 config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://icon.svg"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/state-machine/plugin.cfg")

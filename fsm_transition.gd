@@ -1,3 +1,4 @@
+@tool
 class_name FsmTransition
 extends ColorRect
 
@@ -41,6 +42,9 @@ func _input(event: InputEvent):
 
 
 func _process(_delta: float) -> void:
+	if not from_node and not to_node:
+		return
+
 	from = from_node.global_position
 	to = to_node.global_position
 
