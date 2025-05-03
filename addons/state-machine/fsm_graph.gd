@@ -2,7 +2,13 @@
 class_name FsmGraph
 extends Control
 
-var fsm_state_node_scn: = preload("res://fsm_state_node.tscn")
+var fsm_state_node_scn: = preload("res://addons/state-machine/fsm_state_node.tscn")
+
+
+func add_fsm_state_node(node: FsmStateNode) -> void:
+	add_child(node)
+	node.transition_add_started.connect(func(x): print("Transition start: ", x))
+	node.transition_add_finished.connect(func(x): print("Transition finished: ", x))
 
 
 func _ready() -> void:

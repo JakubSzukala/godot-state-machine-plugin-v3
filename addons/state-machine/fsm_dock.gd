@@ -2,7 +2,7 @@
 class_name FSMDock
 extends EditorProperty
 
-var fsm_state_node_scn: = preload("res://fsm_state_node.tscn")
+var fsm_state_node_scn: = preload("res://addons/state-machine/fsm_state_node.tscn")
 
 var root_control: = Control.new()
 var graph: = FsmGraph.new()
@@ -13,12 +13,14 @@ var target: FSM
 func _ready() -> void:
 	target = get_edited_object()
 	for state in get_edited_object().find_children("*", "FSMState", false, false):
+		var node
 		if target.states_view and target.states_view.has(state.name):
 			# If state was serialized to states_view, then deserialize it
-			graph.add_child(_deserialize_fsm_state_node(target.states_view[state.name]))
+			node = _deserialize_fsm_state_node(target.states_view[state.name])
 		else:
 			# Otherwise, create a default node
-			graph.add_child(_default_fsm_state_node(state.name))
+			node = _default_fsm_state_node(state.name)
+		graph.add_fsm_state_node(node)
 
 
 func _init() -> void:
@@ -27,6 +29,7 @@ func _init() -> void:
 	add_focusable(root_control)
 	root_control.custom_minimum_size = Vector2(150, 550)
 	root_control.set_anchors_and_offsets_preset(LayoutPreset.PRESET_FULL_RECT)
+	root_control.mouse_filter = Control.MOUSE_FILTER_PASS;
 	root_control.add_child(graph)
 
 
