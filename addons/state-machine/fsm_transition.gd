@@ -71,7 +71,7 @@ func _process(_delta: float) -> void:
 	var mid_angle = 0.5 * (angles["end"] - angles["start"])
 	var mid_vec: Vector2 = (from - center)
 	mid_vec = mid_vec.rotated(mid_angle)
-	global_position = mid_vec + center
+	global_position = mid_vec + center - size / 2
 	queue_redraw()
 
 
@@ -83,7 +83,7 @@ func _draw() -> void:
 	angles = _equivalent_positive(angles["start"], angles["end"])
 	angles = _clockwise(angles["start"], angles["end"])
 	draw_arc(center - global_position, r, angles["start"], angles["end"], 1000, Color.AQUAMARINE, 1, true)
-	draw_circle(center - global_position, 5, Color.CORAL)
+	#draw_circle(center - global_position, 5, Color.CORAL)
 
 
 func _equivalent_positive(start: float, end: float) -> Dictionary:

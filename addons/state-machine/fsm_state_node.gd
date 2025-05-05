@@ -10,11 +10,11 @@ var mouse_inside: bool = false
 
 
 func set_state_name(new_name: String) -> void:
-	$VBoxContainer/Label.text = new_name
+	$Label.text = new_name
 
 
 func get_state_name() -> String:
-	return $VBoxContainer/Label.text
+	return $Label.text
 
 
 func get_global_center() -> Vector2:

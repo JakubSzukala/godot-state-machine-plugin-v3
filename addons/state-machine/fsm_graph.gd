@@ -46,13 +46,12 @@ func _exit_tree() -> void:
 # TODO: Rename these events to something like transition_drag_started
 # TODO: Maybe rename dummy to something indicating it's role?
 func _on_transition_add_started(state_node: FsmStateNode) -> void:
-	var fsm_transition = fsm_transition_scn.instantiate() as FsmTransition
+	dragging_transition = fsm_transition_scn.instantiate() as FsmTransition
 	var dummy = fsm_dummy_state_node_scn.instantiate() as FSMDummyStateNode
-	fsm_transition.from_node = state_node
-	fsm_transition.to_node = dummy
-	add_child(fsm_transition)
+	dragging_transition.from_node = state_node
+	dragging_transition.to_node = dummy
+	add_child(dragging_transition)
 	add_child(dummy)
-	dragging_transition = fsm_transition
 
 
 func _on_transition_add_finished(state_node: FsmStateNode) -> void:
