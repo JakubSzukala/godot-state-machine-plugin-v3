@@ -1,49 +1,32 @@
 [gd_scene load_steps=3 format=3 uid="uid://bmn0myjrrlw4j"]
 
 [ext_resource type="Script" uid="uid://j5ey4g6t6apf" path="res://addons/state-machine/fsm.gd" id="1_0x6bt"]
-[ext_resource type="PackedScene" uid="uid://cjgj2svoakpjs" path="res://addons/state-machine/dummy_state.tscn" id="2_n67wk"]
+[ext_resource type="Script" uid="uid://bcryn8lwf4jvl" path="res://addons/state-machine/fsm_state.gd" id="2_n67wk"]
 
 [node name="Fsm" type="Node"]
 script = ExtResource("1_0x6bt")
 transitions = {
-"Idle/": "Run2",
-"Run/": "Idle",
-"Run2/": "Run"
+"FSMState/": "FSMState2"
 }
-fsm_states_view = {
-"Idle": {
-"name": "Idle",
-"position": Vector2(245, 176)
-},
-"Run": {
-"name": "Run",
-"position": Vector2(31, 176)
-},
-"Run2": {
-"name": "Run2",
-"position": Vector2(460, 182)
-}
-}
-transitions_view = Array[Dictionary]([{
-"event": "dakjfsdkal",
-"from": "Run",
-"r_scale": 1.0,
-"to": "Idle"
+state_views = Array[Dictionary]([{
+"name": "FSMState",
+"position": Vector2(92, 264)
 }, {
-"event": "csdfasdf",
-"from": "Idle",
+"name": "FSMState2",
+"position": Vector2(417, 230)
+}])
+transition_views = Array[Dictionary]([{
+"event": "",
+"from": "FSMState",
 "r_scale": 1.0,
-"to": "Run2"
-}, {
-"event": "adsf",
-"from": "Run2",
-"r_scale": 1.0,
-"to": "Run"
+"to": "FSMState2"
 }])
 metadata/_custom_type_script = "uid://j5ey4g6t6apf"
 
-[node name="Idle" parent="." instance=ExtResource("2_n67wk")]
+[node name="FSMState" type="Node" parent="."]
+script = ExtResource("2_n67wk")
+metadata/_custom_type_script = "uid://bcryn8lwf4jvl"
 
-[node name="Run" parent="." instance=ExtResource("2_n67wk")]
-
-[node name="Run2" parent="." instance=ExtResource("2_n67wk")]
+[node name="FSMState2" type="Node" parent="."]
+script = ExtResource("2_n67wk")
+metadata/_custom_type_script = "uid://bcryn8lwf4jvl"

@@ -4,23 +4,62 @@ extends ColorRect
 
 signal event_name_set(event_name: String)
 
-var from_node: FsmStateNode
-var to_node: Node
-var r_scale: float = 1.0:
+var _from_node: FsmStateNode
+var _to_node: Node
+var _r_scale: float = 1.0:
 	set(value):
 		if value < 1.0:
-			r_scale = 1.0
+			_r_scale = 1.0
 		else:
-			r_scale = value
+			_r_scale = value
 var _from: Vector2
 var _to: Vector2
 var _center: Vector2
 var _r: float
 var _rescalable: bool = false
+var _prev_event_name: String = ""
+
+# NOTE: We expose so many setters and getters to hide quite tangled ways of getting
+# data that we want to expose
+
+func set_from_node(new_node: FsmStateNode) -> void:
+	_from_node = new_node
+
+
+func set_to_node(new_node: Node) -> void:
+	_to_node = new_node
+
+
+func get_from_node_name() -> String:
+	return _from_node.get_state_name()
+
+
+func set_from_node_name(new_name: String) -> void:
+	_from_node.set_state_name(new_name)
 
 
 func get_event_name() -> String:
 	return $EventName.text
+
+
+func set_event_name(new_name: String) -> void:
+	$EventName.text = new_name
+
+
+func get_to_node_name() -> String:
+	return _to_node.get_state_name()
+
+
+func set_to_node_name(new_name: String) -> void:
+	_to_node.set_state_name(new_name)
+
+
+func get_r_scale() -> float:
+	return _r_scale
+
+
+func set_r_scale(new_value: float) -> void:
+	_r_scale = new_value
 
 
 func _ready() -> void:
@@ -40,20 +79,20 @@ func _input(event: InputEvent):
 	# TODO: Adding const value here feels pretty janky, in future we could use
 	# some function with very low values near 0.5 and high values further _from it
 	if mouse_button_event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-		r_scale = r_scale + 0.01
+		_r_scale = _r_scale + 0.01
 	elif mouse_button_event.button_index == MOUSE_BUTTON_WHEEL_UP:
-		r_scale = r_scale - 0.01
+		_r_scale = _r_scale - 0.01
 
 
 func _process(_delta: float) -> void:
-	if not from_node and not to_node:
+	if not _from_node and not _to_node:
 		return
 
-	_from = from_node.get_global_center() #from_node.global_position
-	_to = to_node.get_global_center() # to_node.global_position
+	_from = _from_node.get_global_center()
+	_to = _to_node.get_global_center()
 
 	# Calculate radius of a circle encapsulating both points, it may be scaled by user
-	_r = _from.distance_to(_to) * 0.5 * r_scale
+	_r = _from.distance_to(_to) * 0.5 * _r_scale
 
 	# Calculate circle _center given two points it has _to encompass and radius
 	var q = _from.distance_to(_to)
@@ -103,3 +142,7 @@ func _clockwise(start: float, end: float) -> Dictionary:
 	if start > end:
 		end = end + 2 * PI
 	return {"start" : start, "end" : end}
+
+
+func _on_text_set() -> void:
+	pass

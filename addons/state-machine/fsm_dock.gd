@@ -31,49 +31,16 @@ func _ready() -> void:
 
 
 func _exit_tree() -> void:
-	# TODO: Remove these deserialize functions and move their content to graph.gd
-	var states_view = {}
-	for node in graph.get_state_nodes():
-		var data = _serialize_fsm_state_node(node)
-		states_view[node.get_state_name()] = data
-	fsm.fsm_states_view = states_view
-
-	var transitions_view: Array[Dictionary] = []
-	for transition in graph.get_transition_nodes():
-		var data = _serialize_fsm_transition(transition)
-		transitions_view.push_back(data)
-	fsm.transitions_view = transitions_view
-
-
-func _serialize_fsm_state_node(node: FsmStateNode) -> Dictionary:
-	return {
-		"name" : node.get_state_name(),
-		"position" : node.position
-	}
-
-
-func _default_fsm_state_node(node_name: String) -> FsmStateNode:
-	var fsm_state_node: FsmStateNode = fsm_state_node_scn.instantiate()
-	fsm_state_node.set_state_name(node_name)
-	fsm_state_node.position = Vector2.ZERO
-	return fsm_state_node
-
-
-func _serialize_fsm_transition(transition: FsmTransition) -> Dictionary:
-	return {
-		"from" : transition.from_node.get_state_name(),
-		"event" : transition.get_event_name(),
-		"to" : transition.to_node.get_state_name(),
-		"r_scale" : transition.r_scale
-	}
+	fsm.state_views = graph.get_state_views()
+	fsm.transition_views = graph.get_transition_views()
 
 
 ## Source of truth are child states in edited FSM
 func _place_state_nodes() -> void:
 	for state_name in fsm.get_state_names():
-		var fsm_state_view_data = fsm.get_state_view_data(state_name)
-		if fsm_state_view_data:
-			graph.add_state_node(fsm_state_view_data)
+		var state_view = fsm.get_state_view(state_name)
+		if state_view:
+			graph.add_state_node(state_view)
 		else:
 			graph.add_state_node({"name" : state_name, "position" : Vector2.ZERO})
 
@@ -95,7 +62,7 @@ func _place_transitions_nodes() -> void:
 		# in state machine, if there is, choose it
 		var equal_view = _find_logically_equal_transition_view(
 			target_transition_view,
-			fsm.transitions_view
+			fsm.transition_views
 		)
 		if equal_view:
 			target_transition_view = equal_view
@@ -128,7 +95,6 @@ func _to_transition(transition_view: Dictionary) -> Array:
 
 
 func _find_logically_equal_transition_view(target_transition_view: Dictionary,
-					  #transition_views: Array[Dictionary]):
 					  transition_views):
 	for transition_view in transition_views:
 		if _transition_views_logically_eqal(target_transition_view, transition_view):
@@ -142,11 +108,9 @@ func _transition_views_logically_eqal(fsm_transition_view1, fsm_transition_view2
 		fsm_transition_view1["to"] == fsm_transition_view2["to"]
 
 
-func _on_transition_added(key: String, value: String) -> void:
-	# Check if identical existing transition doesn't already exist. This
-	# should never happen so we assert it
-	assert(!(fsm.transitions.has(key) and fsm.transitions[key] == value))
-	fsm.transitions[key] = value
+func _on_transition_added(transition_view: Dictionary) -> void:
+	var key = transition_view["from"] + "/" + transition_view["event"]
+	fsm.transitions[key] = transition_view["to"]
 	emit_changed(get_edited_property(), fsm.transitions)
 
 
