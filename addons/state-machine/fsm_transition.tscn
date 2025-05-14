@@ -11,7 +11,7 @@ focus_mode = 1
 color = Color(0.0842275, 0.492063, 0.530549, 1)
 script = ExtResource("1_wsrkh")
 
-[node name="TextEdit" type="TextEdit" parent="."]
+[node name="EventName" type="TextEdit" parent="."]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 1
 anchors_preset = 7

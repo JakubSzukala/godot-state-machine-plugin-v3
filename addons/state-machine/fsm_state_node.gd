@@ -2,8 +2,8 @@
 class_name FsmStateNode
 extends ColorRect
 
-signal transition_add_started(state_node: FsmStateNode)
-signal transition_add_finished(state_node: FsmStateNode)
+signal transition_drag_started(state_node: FsmStateNode)
+signal transition_drag_finished(state_node: FsmStateNode)
 
 var drag_mouse_offset = null
 var mouse_inside: bool = false
@@ -11,10 +11,11 @@ var mouse_inside: bool = false
 
 func set_state_name(new_name: String) -> void:
 	$Label.text = new_name
+	name = new_name
 
 
 func get_state_name() -> String:
-	return $Label.text
+	return name
 
 
 func get_global_center() -> Vector2:
@@ -50,10 +51,10 @@ func _input(event: InputEvent):
 	# otherwise it won't work
 	if event_mouse_button.button_index == MOUSE_BUTTON_RIGHT and \
 	   mouse_inside and event_mouse_button.pressed:
-		transition_add_started.emit(self)
+		transition_drag_started.emit(self)
 	elif event_mouse_button.button_index == MOUSE_BUTTON_RIGHT and \
 	   mouse_inside and event_mouse_button.pressed == false:
-		transition_add_finished.emit(self)
+		transition_drag_finished.emit(self)
 
 
 func _process(_delta: float) -> void:

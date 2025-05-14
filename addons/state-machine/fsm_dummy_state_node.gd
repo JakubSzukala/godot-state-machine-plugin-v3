@@ -5,3 +5,7 @@ extends Control
 
 func get_global_center() -> Vector2:
 	return get_global_mouse_position()
+
+
+func get_state_name() -> String:
+	return ""

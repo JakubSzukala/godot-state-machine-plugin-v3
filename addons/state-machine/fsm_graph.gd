@@ -2,6 +2,9 @@
 class_name FsmGraph
 extends Control
 
+signal transition_added(key: String, value: String)
+signal transition_removed(key: String, value: String)
+
 var fsm_state_node_scn: = preload("res://addons/state-machine/fsm_state_node.tscn")
 var fsm_transition_scn: = preload("res://addons/state-machine/fsm_transition.tscn")
 var fsm_dummy_state_node_scn = preload("res://addons/state-machine/fsm_dummy_state_node.tscn")
@@ -9,32 +12,43 @@ var fsm_dummy_state_node_scn = preload("res://addons/state-machine/fsm_dummy_sta
 var dragging_transition: FsmTransition = null
 
 
-func add_fsm_state_node(node: FsmStateNode) -> void:
-	add_child(node)
-	node.transition_add_started.connect(_on_transition_add_started)
-	node.transition_add_finished.connect(_on_transition_add_finished)
+func add_state_node(state_view: Dictionary) -> void:
+	var fsm_state_node: FsmStateNode = fsm_state_node_scn.instantiate()
+	fsm_state_node.set_state_name(state_view["name"])
+	fsm_state_node.position = state_view["position"]
+	add_child(fsm_state_node)
+	fsm_state_node.transition_drag_started.connect(_on_transition_drag_started)
+	fsm_state_node.transition_drag_finished.connect(_on_transition_drag_finished)
 
+
+func add_transition_node(transition_view: Dictionary) -> void:
+	var fsm_transition: FsmTransition = fsm_transition_scn.instantiate()
+	var from_node = get_state_node(transition_view["from"])
+	var to_node = get_state_node(transition_view["to"])
+	assert(from_node and to_node)
+	fsm_transition.from_node = from_node
+	fsm_transition.to_node = to_node
+	fsm_transition.r_scale = transition_view["r_scale"]
+	add_child(fsm_transition)
+
+
+func get_state_nodes() -> Array:
+	return find_children("*", "FsmStateNode", false, false)
+
+
+func get_state_node(node_name: String) -> FsmStateNode:
+	var fsm_state_node: FsmStateNode = get_node(node_name)
+	return fsm_state_node
+
+
+func get_transition_nodes() -> Array:
+	return find_children("*", "FsmTransition", false, false)
 
 func _ready() -> void:
 	pass
-	# TODO: This will not be here, you will not be able to add
-	# nodes manually - only by adding them as children to FSM
-	#var idle_state_node: FsmStateNode = fsm_state_node_scn.instantiate()
-	#add_child(idle_state_node)
-	#idle_state_node.set_state_name("Idle")
-	#idle_state_node.transition_add_requested.connect(_on_transition_add_requested)
-	#idle_state_node.global_position = Vector2(200, 200)
-#
-	#var run_state_node: FsmStateNode = fsm_state_node_scn.instantiate()
-	#add_child(run_state_node)
-	#run_state_node.set_state_name("Run")
-	#run_state_node.transition_add_requested.connect(_on_transition_add_requested)
-	#run_state_node.global_position = Vector2(550, 500)
+
 
 func _process(_delta):
-	#print("fsm")
-	#print(get_children())
-	#print(size)
 	return
 
 
@@ -43,9 +57,7 @@ func _exit_tree() -> void:
 	pass
 
 
-# TODO: Rename these events to something like transition_drag_started
-# TODO: Maybe rename dummy to something indicating it's role?
-func _on_transition_add_started(state_node: FsmStateNode) -> void:
+func _on_transition_drag_started(state_node: FsmStateNode) -> void:
 	dragging_transition = fsm_transition_scn.instantiate() as FsmTransition
 	var dummy = fsm_dummy_state_node_scn.instantiate() as FSMDummyStateNode
 	dragging_transition.from_node = state_node
@@ -54,7 +66,13 @@ func _on_transition_add_started(state_node: FsmStateNode) -> void:
 	add_child(dummy)
 
 
-func _on_transition_add_finished(state_node: FsmStateNode) -> void:
+func _on_transition_drag_finished(state_node: FsmStateNode) -> void:
 	dragging_transition.to_node = state_node
 	find_children("*", "FSMDummyStateNode", false, false)[0].queue_free()
+
+	# Notify about transition being added
+	var key = dragging_transition.from_node.name + "/" + dragging_transition.get_event_name()
+	var value = dragging_transition.to_node.name
+	transition_added.emit(key, value)
+
 	dragging_transition = null

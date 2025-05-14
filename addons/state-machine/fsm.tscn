@@ -5,20 +5,41 @@
 
 [node name="Fsm" type="Node"]
 script = ExtResource("1_0x6bt")
-states_view = {
+transitions = {
+"Idle/": "Run2",
+"Run/": "Idle",
+"Run2/": "Run"
+}
+fsm_states_view = {
 "Idle": {
 "name": "Idle",
-"position": Vector2(308, 438)
+"position": Vector2(245, 176)
 },
 "Run": {
 "name": "Run",
-"position": Vector2(314, 202)
+"position": Vector2(31, 176)
 },
 "Run2": {
 "name": "Run2",
-"position": Vector2(300, -18)
+"position": Vector2(460, 182)
 }
 }
+transitions_view = Array[Dictionary]([{
+"event": "dakjfsdkal",
+"from": "Run",
+"r_scale": 1.0,
+"to": "Idle"
+}, {
+"event": "csdfasdf",
+"from": "Idle",
+"r_scale": 1.0,
+"to": "Run2"
+}, {
+"event": "adsf",
+"from": "Run2",
+"r_scale": 1.0,
+"to": "Run"
+}])
 metadata/_custom_type_script = "uid://j5ey4g6t6apf"
 
 [node name="Idle" parent="." instance=ExtResource("2_n67wk")]
