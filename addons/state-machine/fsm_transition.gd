@@ -2,7 +2,7 @@
 class_name FsmTransition
 extends ColorRect
 
-signal event_name_set(event_name: String)
+signal transition_changed(prev: Dictionary, new: Dictionary)
 
 var _from_node: FsmStateNode
 var _to_node: Node
@@ -23,19 +23,30 @@ var _prev_event_name: String = ""
 # data that we want to expose
 
 func set_from_node(new_node: FsmStateNode) -> void:
+	var old = as_transition_view()
 	_from_node = new_node
+	var new = as_transition_view()
+	transition_changed.emit(old, new)
 
 
 func set_to_node(new_node: Node) -> void:
+	var old = as_transition_view()
 	_to_node = new_node
+	var new = as_transition_view()
+	transition_changed.emit(old, new)
 
 
 func get_from_node_name() -> String:
-	return _from_node.get_state_name()
+	if _from_node:
+		return _from_node.get_state_name()
+	return ""
 
 
 func set_from_node_name(new_name: String) -> void:
+	var old = as_transition_view()
 	_from_node.set_state_name(new_name)
+	var new = as_transition_view()
+	transition_changed.emit(old, new)
 
 
 func get_event_name() -> String:
@@ -43,15 +54,23 @@ func get_event_name() -> String:
 
 
 func set_event_name(new_name: String) -> void:
+	var old = as_transition_view()
 	$EventName.text = new_name
+	var new = as_transition_view()
+	transition_changed.emit(old, new)
 
 
 func get_to_node_name() -> String:
-	return _to_node.get_state_name()
+	if _to_node:
+		return _to_node.get_state_name()
+	return ""
 
 
 func set_to_node_name(new_name: String) -> void:
+	var old = as_transition_view()
 	_to_node.set_state_name(new_name)
+	var new = as_transition_view()
+	transition_changed.emit(old, new)
 
 
 func get_r_scale() -> float:
@@ -59,13 +78,35 @@ func get_r_scale() -> float:
 
 
 func set_r_scale(new_value: float) -> void:
+	var old = as_transition_view()
 	_r_scale = new_value
+	var new = as_transition_view()
+	transition_changed.emit(old, new)
+
+
+func get_prev_event_name() -> String:
+	return _prev_event_name
+
+
+func as_transition_view() -> Dictionary:
+	return {
+		"from" : get_from_node_name(),
+		"event" : get_event_name(),
+		"to" : get_to_node_name(),
+		"r_scale" : get_r_scale()
+	}
+
+
+static func transition_views_logically_equal(v1: Dictionary, v2: Dictionary) -> bool:
+	return v1["from"] == v2["from"] and \
+		v1["event"] == v2["event"] and \
+		v1["to"] == v2["to"]
 
 
 func _ready() -> void:
 	focus_entered.connect(func(): _rescalable = true)
 	focus_exited.connect(func(): _rescalable = false)
-	$EventName.text_set.connect(func(): event_name_set.emit($EventName.text))
+	$EventName.text_changed.connect(_on_event_name_set)
 
 
 func _input(event: InputEvent):
@@ -144,5 +185,10 @@ func _clockwise(start: float, end: float) -> Dictionary:
 	return {"start" : start, "end" : end}
 
 
-func _on_text_set() -> void:
-	pass
+func _on_event_name_set() -> void:
+	# In here, the difference will be only in event
+	var old = as_transition_view()
+	var new = as_transition_view()
+	old["event"] = _prev_event_name
+	_prev_event_name = $EventName.text
+	transition_changed.emit(old, new)

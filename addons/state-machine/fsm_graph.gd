@@ -26,9 +26,10 @@ func add_transition_node(transition_view: Dictionary) -> void:
 	var from_node = _get_state_node(transition_view["from"])
 	var to_node = _get_state_node(transition_view["to"])
 	assert(from_node and to_node)
-	fsm_transition._from_node = from_node
-	fsm_transition._to_node = to_node
-	fsm_transition._r_scale = transition_view["r_scale"]
+	fsm_transition.set_from_node(from_node)
+	fsm_transition.set_to_node(to_node)
+	fsm_transition.set_r_scale(transition_view["r_scale"])
+	fsm_transition.transition_changed.connect(_on_transition_changed)
 	add_child(fsm_transition)
 
 
@@ -46,13 +47,7 @@ func get_state_views() -> Array[Dictionary]:
 func get_transition_views() -> Array[Dictionary]:
 	var output: Array[Dictionary] = []
 	for transition in _get_transition_nodes():
-		var transition_view = {
-			"from" : transition.get_from_node_name(),
-			"event" : transition.get_event_name(),
-			"to" : transition.get_to_node_name(),
-			"r_scale" : transition.get_r_scale()
-		}
-		output.append(transition_view)
+		output.append(transition.as_transition_view())
 	return output
 
 
@@ -71,7 +66,7 @@ func _get_transition_nodes() -> Array:
 
 func _on_transition_drag_started(state_node: FsmStateNode) -> void:
 	dragging_transition = fsm_transition_scn.instantiate() as FsmTransition
-	var dummy = fsm_dummy_state_node_scn.instantiate() as FSMDummyStateNode
+	var dummy: FSMDummyStateNode = fsm_dummy_state_node_scn.instantiate()
 	dragging_transition.set_from_node(state_node)
 	dragging_transition.set_to_node(dummy)
 	add_child(dragging_transition)
@@ -83,12 +78,15 @@ func _on_transition_drag_finished(state_node: FsmStateNode) -> void:
 	find_children("*", "FSMDummyStateNode", false, false)[0].queue_free()
 
 	# Notify about transition being added
-	var transition_view: = {
-		"from" : dragging_transition.get_from_node_name(),
-		"event" : dragging_transition.get_event_name(),
-		"to" : dragging_transition.get_to_node_name(),
-		"r_scale" : dragging_transition.get_r_scale()
-	}
+	var transition_view: = dragging_transition.as_transition_view()
 	transition_added.emit(transition_view)
 
 	dragging_transition = null
+
+
+func _on_transition_changed(prev: Dictionary, new: Dictionary) -> void:
+	if FsmTransition.transition_views_logically_equal(prev, new):
+		return
+
+	transition_removed.emit(prev)
+	transition_added.emit(new)

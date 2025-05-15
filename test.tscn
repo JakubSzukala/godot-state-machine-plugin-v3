@@ -1,0 +1,37 @@
+[gd_scene load_steps=3 format=3 uid="uid://f6xtuwp4ubuf"]
+
+[ext_resource type="PackedScene" uid="uid://bmn0myjrrlw4j" path="res://addons/state-machine/fsm.tscn" id="1_37kl0"]
+[ext_resource type="Script" uid="uid://bcryn8lwf4jvl" path="res://addons/state-machine/fsm_state.gd" id="2_8uh7m"]
+
+[node name="Node" type="Node"]
+
+[node name="Fsm" parent="." instance=ExtResource("1_37kl0")]
+transitions = {
+"FSMState/": "FSMState2"
+}
+state_views = Array[Dictionary]([{
+"name": "FSMState",
+"position": Vector2(95, 263)
+}, {
+"name": "FSMState2",
+"position": Vector2(453, 232)
+}])
+transition_views = Array[Dictionary]([{
+"event": "",
+"from": "FSMState",
+"r_scale": 1.0,
+"to": "FSMState2"
+}, {
+"event": "",
+"from": "FSMState",
+"r_scale": 1.0,
+"to": "FSMState2"
+}])
+
+[node name="FSMState" type="Node" parent="Fsm"]
+script = ExtResource("2_8uh7m")
+metadata/_custom_type_script = "uid://bcryn8lwf4jvl"
+
+[node name="FSMState2" type="Node" parent="Fsm"]
+script = ExtResource("2_8uh7m")
+metadata/_custom_type_script = "uid://bcryn8lwf4jvl"
