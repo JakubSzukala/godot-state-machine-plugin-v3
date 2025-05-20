@@ -97,7 +97,7 @@ func as_transition_view() -> Dictionary:
 	}
 
 
-static func transition_views_logically_equal(v1: Dictionary, v2: Dictionary) -> bool:
+static func logically_equal(v1: Dictionary, v2: Dictionary) -> bool:
 	return v1["from"] == v2["from"] and \
 		v1["event"] == v2["event"] and \
 		v1["to"] == v2["to"]

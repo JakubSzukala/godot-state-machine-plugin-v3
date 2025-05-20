@@ -13,6 +13,7 @@ var fsm: FSM
 # TODO: _update_property to handle changes from outside
 
 func _init() -> void:
+	#print("Hello", get_edited_property())
 	add_child(root_control)
 	set_bottom_editor(root_control)
 	add_focusable(root_control)
@@ -62,7 +63,7 @@ func _place_transitions_nodes() -> void:
 		# if not update transitions and skip adding it to graph
 		if not _is_transition_view_valid(target_transition_view):
 			fsm.transitions.erase(transition_key)
-			emit_changed(get_edited_property(), fsm.transitions)
+			emit_changed(FsmInspectorPlugin.TRANSITIONS, fsm.transitions)
 			continue
 
 		# Check if there is already logically equivalent view defined
@@ -104,7 +105,7 @@ func _to_transition(transition_view: Dictionary) -> Array:
 func _find_logically_equal_transition_view(target_transition_view: Dictionary,
 					  transition_views):
 	for transition_view in transition_views:
-		if FsmTransition.transition_views_logically_equal(target_transition_view, transition_view):
+		if FsmTransition.logically_equal(target_transition_view, transition_view):
 			return transition_view
 	return null
 
@@ -114,15 +115,54 @@ func _is_transition_view_valid(transition_view: Dictionary) -> bool:
 		fsm.find_child(transition_view["to"], false, false) != null
 
 
-func _on_transition_added(transition_view: Dictionary) -> void:
+func _add_to_fsm(transition_view: Dictionary) -> void:
+	# TODO: Check if fsm doesn't already contain such view/transition
+
+	# Update model
 	var result = _to_transition(transition_view)
 	fsm.transitions[result[0]] = result[1]
-	emit_changed(get_edited_property(), fsm.transitions)
+	emit_changed(FsmInspectorPlugin.TRANSITIONS, fsm.transitions)
+
+	# Update view
+	fsm.transition_views.append(transition_view)
+	emit_changed(FsmInspectorPlugin.TRANSITION_VIEWS, fsm.transition_views)
+
+
+func _remove_from_fsm(transition_view: Dictionary) -> void:
+	pass
+
+
+func _update_in_fsm(transition_view: Dictionary) -> void:
+	pass
+
+
+func _remove_dups_from_fsm() -> int:
+	return 0 # When no dupes, count of dups otherwise
+
+
+func _remove_logical_dups_from_fsm() -> int:
+	return 0
+
+
+func _on_transition_added(transition_view: Dictionary) -> void:
+	_add_to_fsm(transition_view)
 
 
 func _on_transition_removed(transition_view: Dictionary) -> void:
 	var result = _to_transition(transition_view)
 	var key = result[0]
+	# Update model
 	if fsm.transitions.has(key):
 		fsm.transitions.erase(key)
-		emit_changed(get_edited_property(), fsm.transitions)
+		emit_changed(FsmInspectorPlugin.TRANSITIONS, fsm.transitions)
+
+	# Update view
+	var idx: = fsm.transition_views.find_custom(func(x):
+		return FsmTransition.logically_equal(transition_view, x)
+	)
+	if idx != -1:
+		fsm.transition_views.remove_at(idx)
+		emit_changed(FsmInspectorPlugin.TRANSITION_VIEWS, fsm.transition_views)
+	print("Remove: ", fsm.transition_views)
+
+# TODO: Also save updates to view only

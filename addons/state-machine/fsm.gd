@@ -2,6 +2,7 @@
 class_name FSM
 extends Node
 
+# TODO: These properties should be private (prepend with _)
 ## {
 ## 		"" : 
 ## }
@@ -25,6 +26,7 @@ func get_state_names() -> Array:
 	return names
 
 
+# TODO: Don't return null, return default view
 func get_state_view(state_name: String):
 	for state_view in state_views:
 		if state_view["name"] == state_name:

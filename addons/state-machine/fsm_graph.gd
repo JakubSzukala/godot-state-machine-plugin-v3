@@ -85,7 +85,7 @@ func _on_transition_drag_finished(state_node: FsmStateNode) -> void:
 
 
 func _on_transition_changed(prev: Dictionary, new: Dictionary) -> void:
-	if FsmTransition.transition_views_logically_equal(prev, new):
+	if FsmTransition.logically_equal(prev, new):
 		return
 
 	transition_removed.emit(prev)

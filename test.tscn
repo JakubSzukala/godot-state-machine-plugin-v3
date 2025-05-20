@@ -7,14 +7,17 @@
 
 [node name="Fsm" parent="." instance=ExtResource("1_37kl0")]
 transitions = {
-"FSMState/": "FSMState2"
+"FSMState/du": "FSMState2",
+"FSMState/h": "FSMState2",
+"FSMState/k": "FSMState2",
+"FSMState/s": "FSMState2"
 }
 state_views = Array[Dictionary]([{
 "name": "FSMState",
-"position": Vector2(95, 263)
+"position": Vector2(17, 416)
 }, {
 "name": "FSMState2",
-"position": Vector2(453, 232)
+"position": Vector2(336, 158)
 }])
 transition_views = Array[Dictionary]([{
 "event": "",
@@ -24,7 +27,12 @@ transition_views = Array[Dictionary]([{
 }, {
 "event": "",
 "from": "FSMState",
-"r_scale": 1.0,
+"r_scale": 1.12,
+"to": "FSMState2"
+}, {
+"event": "h",
+"from": "FSMState",
+"r_scale": 1.88,
 "to": "FSMState2"
 }])
 
