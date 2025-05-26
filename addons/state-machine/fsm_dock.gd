@@ -13,7 +13,6 @@ var fsm: FSM
 # TODO: _update_property to handle changes from outside
 
 func _init() -> void:
-	#print("Hello", get_edited_property())
 	add_child(root_control)
 	set_bottom_editor(root_control)
 	add_focusable(root_control)
@@ -129,7 +128,20 @@ func _add_to_fsm(transition_view: Dictionary) -> void:
 
 
 func _remove_from_fsm(transition_view: Dictionary) -> void:
-	pass
+	var result = _to_transition(transition_view)
+	var key = result[0]
+	# Update model
+	if fsm.transitions.has(key):
+		fsm.transitions.erase(key)
+		emit_changed(FsmInspectorPlugin.TRANSITIONS, fsm.transitions)
+
+	# Update view
+	var idx: = fsm.transition_views.find_custom(func(x):
+		return FsmTransition.logically_equal(transition_view, x)
+	)
+	if idx != -1:
+		fsm.transition_views.remove_at(idx)
+		emit_changed(FsmInspectorPlugin.TRANSITION_VIEWS, fsm.transition_views)
 
 
 func _update_in_fsm(transition_view: Dictionary) -> void:
@@ -149,20 +161,6 @@ func _on_transition_added(transition_view: Dictionary) -> void:
 
 
 func _on_transition_removed(transition_view: Dictionary) -> void:
-	var result = _to_transition(transition_view)
-	var key = result[0]
-	# Update model
-	if fsm.transitions.has(key):
-		fsm.transitions.erase(key)
-		emit_changed(FsmInspectorPlugin.TRANSITIONS, fsm.transitions)
-
-	# Update view
-	var idx: = fsm.transition_views.find_custom(func(x):
-		return FsmTransition.logically_equal(transition_view, x)
-	)
-	if idx != -1:
-		fsm.transition_views.remove_at(idx)
-		emit_changed(FsmInspectorPlugin.TRANSITION_VIEWS, fsm.transition_views)
-	print("Remove: ", fsm.transition_views)
+	_remove_from_fsm(transition_view)
 
 # TODO: Also save updates to view only

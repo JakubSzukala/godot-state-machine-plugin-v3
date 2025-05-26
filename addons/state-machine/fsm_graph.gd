@@ -27,6 +27,7 @@ func add_transition_node(transition_view: Dictionary) -> void:
 	var to_node = _get_state_node(transition_view["to"])
 	assert(from_node and to_node)
 	fsm_transition.set_from_node(from_node)
+	fsm_transition.set_event_name(transition_view["event"])
 	fsm_transition.set_to_node(to_node)
 	fsm_transition.set_r_scale(transition_view["r_scale"])
 	fsm_transition.transition_changed.connect(_on_transition_changed)
