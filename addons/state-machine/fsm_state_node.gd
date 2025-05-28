@@ -22,6 +22,17 @@ func get_global_center() -> Vector2:
 	return global_position + size / 2
 
 
+func get_position() -> Vector2:
+	return position
+
+
+func as_state_view() -> Dictionary:
+	return {
+		"name" : get_state_name(),
+		"position" : get_position()
+	}
+
+
 func _ready() -> void:
 	mouse_entered.connect(func(): mouse_inside = true)
 	mouse_exited.connect(func(): mouse_inside = false)

@@ -2,8 +2,7 @@
 class_name FsmGraph
 extends Control
 
-signal transition_added(transition_view: Dictionary)
-signal transition_removed(transition_view: Dictionary)
+signal state_modified(full_state_view: Dictionary)
 
 var fsm_state_node_scn: = preload("res://addons/state-machine/fsm_state_node.tscn")
 var fsm_transition_scn: = preload("res://addons/state-machine/fsm_transition.tscn")
@@ -65,6 +64,20 @@ func _get_transition_nodes() -> Array:
 	return find_children("*", "FsmTransition", false, false)
 
 
+func _get_outgoing_transition_views(node_name: String) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	for transition in _get_transition_nodes() as Array[FsmTransition]:
+		if transition.get_from_node_name() == node_name:
+			result.append(transition.as_transition_view())
+	return result
+
+
+func _get_full_state_view(node_name: String) -> Dictionary:
+	var node_view = _get_state_node(node_name).as_state_view()
+	node_view["transitions"] = _get_outgoing_transition_views(node_view["name"])
+	return node_view
+
+
 func _on_transition_drag_started(state_node: FsmStateNode) -> void:
 	dragging_transition = fsm_transition_scn.instantiate() as FsmTransition
 	var dummy: FSMDummyStateNode = fsm_dummy_state_node_scn.instantiate()
@@ -79,8 +92,11 @@ func _on_transition_drag_finished(state_node: FsmStateNode) -> void:
 	find_children("*", "FSMDummyStateNode", false, false)[0].queue_free()
 
 	# Notify about transition being added
-	var transition_view: = dragging_transition.as_transition_view()
-	transition_added.emit(transition_view)
+	#var transition_view: = dragging_transition.as_transition_view()
+
+	# Notify inspector plugin that node representation has changed
+	var from_node_name = dragging_transition.get_from_node_name()
+	state_modified.emit(_get_full_state_view(from_node_name))
 
 	dragging_transition = null
 
@@ -89,5 +105,6 @@ func _on_transition_changed(prev: Dictionary, new: Dictionary) -> void:
 	if FsmTransition.logically_equal(prev, new):
 		return
 
-	transition_removed.emit(prev)
-	transition_added.emit(new)
+	if prev["from"] != new["from"]:
+		state_modified.emit(_get_full_state_view(prev["from"]))
+	state_modified.emit(_get_full_state_view(new["from"]))

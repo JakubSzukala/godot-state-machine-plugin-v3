@@ -2,18 +2,11 @@
 class_name FSM
 extends Node
 
-# TODO: These properties should be private (prepend with _)
-## {
-## 		"" : 
-## }
-@export var transitions: Dictionary
+@export var transitions: Array[Dictionary]
 
-##
-@export var state_views: Array[Dictionary]
-
-## 
-@export var transition_views: Array[Dictionary]
-
+func _ready() -> void:
+	child_entered_tree.connect(_on_child_entered_tree)
+	child_exiting_tree.connect(_on_child_exiting_tree)
 
 func get_states() -> Array:
 	return find_children("*", "FSMState", false, false)
@@ -26,9 +19,27 @@ func get_state_names() -> Array:
 	return names
 
 
-# TODO: Don't return null, return default view
-func get_state_view(state_name: String):
-	for state_view in state_views:
-		if state_view["name"] == state_name:
-			return state_view
-	return null
+# TODO: Fsm should ideally update plugin about addition/removal of states
+# although this should not be major issue as removing node usually means clicking
+# out of FSM which will later start whole node placing process over again
+# TODO: Connect to child rename signal!!!!!!!!1
+func _on_child_entered_tree(node: Node) -> void:
+	var state_node: = node as FSMState
+	if not state_node:
+		return
+
+	transitions.append({
+		"name" : state_node.name,
+		"position" : Vector2.ZERO,
+		"transitions" : []
+	})
+
+
+func _on_child_exiting_tree(node: Node) -> void:
+	var state_node: = node as FSMState
+	if not state_node:
+		return
+
+	for i in range(transitions.size()):
+		if transitions[i]["name"] == state_node.name:
+			transitions.remove_at(i)
