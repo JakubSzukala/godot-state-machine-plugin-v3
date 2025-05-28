@@ -4,6 +4,7 @@ extends ColorRect
 
 signal transition_drag_started(state_node: FsmStateNode)
 signal transition_drag_finished(state_node: FsmStateNode)
+signal state_node_position_changed(state_node_name: String, position: Vector2)
 
 var drag_mouse_offset = null
 var mouse_inside: bool = false
@@ -72,3 +73,4 @@ func _process(_delta: float) -> void:
 	# Keep constant offset from the mouse while dragging
 	if drag_mouse_offset:
 		global_position = get_global_mouse_position() - drag_mouse_offset
+		state_node_position_changed.emit(name, position)

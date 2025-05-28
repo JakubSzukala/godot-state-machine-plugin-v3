@@ -12,12 +12,13 @@ var dragging_transition: FsmTransition = null
 
 
 func add_state_node(state_view: Dictionary) -> void:
-	var fsm_state_node: FsmStateNode = fsm_state_node_scn.instantiate()
-	fsm_state_node.set_state_name(state_view["name"])
-	fsm_state_node.position = state_view["position"]
-	add_child(fsm_state_node)
-	fsm_state_node.transition_drag_started.connect(_on_transition_drag_started)
-	fsm_state_node.transition_drag_finished.connect(_on_transition_drag_finished)
+	var state_node: FsmStateNode = fsm_state_node_scn.instantiate()
+	state_node.set_state_name(state_view["name"])
+	state_node.position = state_view["position"]
+	add_child(state_node)
+	state_node.transition_drag_started.connect(_on_transition_drag_started)
+	state_node.transition_drag_finished.connect(_on_transition_drag_finished)
+	state_node.state_node_position_changed.connect(_on_state_node_position_changed)
 
 
 func add_transition_node(transition_view: Dictionary) -> void:
@@ -105,6 +106,14 @@ func _on_transition_changed(prev: Dictionary, new: Dictionary) -> void:
 	if FsmTransition.logically_equal(prev, new):
 		return
 
+	# TODO: This is pretty clunky, the way it is handled in
+	# _on_state_node_position_changed seems better i.e. we don't need all the
+	# data, we just need affected state nodes and we can extract the rest
+
 	if prev["from"] != new["from"]:
 		state_modified.emit(_get_full_state_view(prev["from"]))
 	state_modified.emit(_get_full_state_view(new["from"]))
+
+
+func _on_state_node_position_changed(state_node_name: String, _position: Vector2) -> void:
+	state_modified.emit(_get_full_state_view(state_node_name))
