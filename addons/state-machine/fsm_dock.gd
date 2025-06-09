@@ -21,19 +21,21 @@ func _init() -> void:
 	add_focusable(root_control)
 	root_control.custom_minimum_size = Vector2(150, 550)
 	root_control.set_anchors_and_offsets_preset(LayoutPreset.PRESET_FULL_RECT)
-	root_control.mouse_filter = Control.MOUSE_FILTER_PASS;
+	root_control.mouse_filter = Control.MOUSE_FILTER_PASS
 	root_control.add_child(graph)
 
 
 func _ready() -> void:
 	fsm = get_edited_object()
+	fsm.sync()
 	graph.state_modified.connect(_on_state_modified)
 	_place()
 
 
 func _update_property() -> void:
-	# TODO
-	print("Updating property from outside")
+	fsm.sync()
+	_clear()
+	_place()
 
 
 ## Source of truth are child states in edited FSM
@@ -46,6 +48,10 @@ func _place() -> void:
 	for state in fsm.transitions:
 		for transition in state["transitions"]:
 			graph.add_transition_node(transition)
+
+
+func _clear() -> void:
+	graph.clear()
 
 
 ## Conversion from transtion to transition view. Note r_scale is always 1.0,

@@ -16,7 +16,7 @@ func set_state_name(new_name: String) -> void:
 
 
 func get_state_name() -> String:
-	return name
+	return $Label.text
 
 
 func get_global_center() -> Vector2:

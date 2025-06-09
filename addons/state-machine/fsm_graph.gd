@@ -15,7 +15,7 @@ func add_state_node(state_view: Dictionary) -> void:
 	var state_node: FsmStateNode = fsm_state_node_scn.instantiate()
 	state_node.set_state_name(state_view["name"])
 	state_node.position = state_view["position"]
-	add_child(state_node)
+	add_child(state_node, true)
 	state_node.transition_drag_started.connect(_on_transition_drag_started)
 	state_node.transition_drag_finished.connect(_on_transition_drag_finished)
 	state_node.state_node_position_changed.connect(_on_state_node_position_changed)
@@ -32,6 +32,11 @@ func add_transition_node(transition_view: Dictionary) -> void:
 	fsm_transition.set_r_scale(transition_view["r_scale"])
 	fsm_transition.transition_changed.connect(_on_transition_changed)
 	add_child(fsm_transition)
+
+
+func clear() -> void:
+	for child in get_children():
+		child.free()
 
 
 func get_state_views() -> Array[Dictionary]:
@@ -117,3 +122,4 @@ func _on_transition_changed(prev: Dictionary, new: Dictionary) -> void:
 
 func _on_state_node_position_changed(state_node_name: String, _position: Vector2) -> void:
 	state_modified.emit(_get_full_state_view(state_node_name))
+
