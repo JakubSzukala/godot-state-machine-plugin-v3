@@ -89,6 +89,7 @@ func _on_transition_drag_started(state_node: FsmStateNode) -> void:
 	var dummy: FSMDummyStateNode = fsm_dummy_state_node_scn.instantiate()
 	dragging_transition.set_from_node(state_node)
 	dragging_transition.set_to_node(dummy)
+	dragging_transition.transition_changed.connect(_on_transition_changed)
 	add_child(dragging_transition)
 	add_child(dummy)
 
@@ -96,9 +97,6 @@ func _on_transition_drag_started(state_node: FsmStateNode) -> void:
 func _on_transition_drag_finished(state_node: FsmStateNode) -> void:
 	dragging_transition.set_to_node(state_node)
 	find_children("*", "FSMDummyStateNode", false, false)[0].queue_free()
-
-	# Notify about transition being added
-	#var transition_view: = dragging_transition.as_transition_view()
 
 	# Notify inspector plugin that node representation has changed
 	var from_node_name = dragging_transition.get_from_node_name()
@@ -122,4 +120,3 @@ func _on_transition_changed(prev: Dictionary, new: Dictionary) -> void:
 
 func _on_state_node_position_changed(state_node_name: String, _position: Vector2) -> void:
 	state_modified.emit(_get_full_state_view(state_node_name))
-
