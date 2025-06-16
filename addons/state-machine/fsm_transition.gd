@@ -2,8 +2,10 @@
 class_name FsmTransition
 extends ColorRect
 
-signal transition_changed(prev: Dictionary, new: Dictionary)
+signal transition_property_changed(id: int, property: String, value: Variant)
+signal deletion_requested(id: int) # TODO
 
+var _id: int
 var _from_node: FsmStateNode
 var _to_node: Node
 var _r_scale: float = 1.0:
@@ -16,24 +18,26 @@ var _from: Vector2
 var _to: Vector2
 var _center: Vector2
 var _r: float
-var _rescalable: bool = false
-var _prev_event_name: String = ""
 
 # NOTE: We expose so many setters and getters to hide quite tangled ways of getting
-# data that we want to expose
+# data that we want to expose and to monitor changes to properties
+
+func set_id(id: int) -> void:
+	_id = id;
+
+
+func get_id() -> int:
+	return _id;
+
 
 func set_from_node(new_node: FsmStateNode) -> void:
-	var old = as_transition_view()
 	_from_node = new_node
-	var new = as_transition_view()
-	transition_changed.emit(old, new)
+	transition_property_changed.emit(_id, "from", _from_node.get_state_name())
 
 
 func set_to_node(new_node: Node) -> void:
-	var old = as_transition_view()
 	_to_node = new_node
-	var new = as_transition_view()
-	transition_changed.emit(old, new)
+	transition_property_changed.emit(_id, "to", _to_node.get_state_name())
 
 
 func get_from_node_name() -> String:
@@ -43,10 +47,8 @@ func get_from_node_name() -> String:
 
 
 func set_from_node_name(new_name: String) -> void:
-	var old = as_transition_view()
 	_from_node.set_state_name(new_name)
-	var new = as_transition_view()
-	transition_changed.emit(old, new)
+	transition_property_changed.emit(_id, "from", _from_node.get_state_name())
 
 
 func get_event_name() -> String:
@@ -54,10 +56,8 @@ func get_event_name() -> String:
 
 
 func set_event_name(new_name: String) -> void:
-	var old = as_transition_view()
 	$EventName.text = new_name
-	var new = as_transition_view()
-	transition_changed.emit(old, new)
+	transition_property_changed.emit(_id, "event", get_event_name())
 
 
 func get_to_node_name() -> String:
@@ -67,10 +67,8 @@ func get_to_node_name() -> String:
 
 
 func set_to_node_name(new_name: String) -> void:
-	var old = as_transition_view()
 	_to_node.set_state_name(new_name)
-	var new = as_transition_view()
-	transition_changed.emit(old, new)
+	transition_property_changed.emit(_id, "to", _to_node.get_state_name())
 
 
 func get_r_scale() -> float:
@@ -78,18 +76,13 @@ func get_r_scale() -> float:
 
 
 func set_r_scale(new_value: float) -> void:
-	var old = as_transition_view()
 	_r_scale = new_value
-	var new = as_transition_view()
-	transition_changed.emit(old, new)
-
-
-func get_prev_event_name() -> String:
-	return _prev_event_name
+	transition_property_changed.emit(_id, "to", _r_scale)
 
 
 func as_transition_view() -> Dictionary:
 	return {
+		"id" : get_id(),
 		"from" : get_from_node_name(),
 		"event" : get_event_name(),
 		"to" : get_to_node_name(),
@@ -104,13 +97,11 @@ static func logically_equal(v1: Dictionary, v2: Dictionary) -> bool:
 
 
 func _ready() -> void:
-	focus_entered.connect(func(): _rescalable = true)
-	focus_exited.connect(func(): _rescalable = false)
 	$EventName.text_changed.connect(_on_event_name_set)
 
 
 func _input(event: InputEvent):
-	if not _rescalable:
+	if not has_focus():
 		return
 
 	var mouse_button_event: = event as InputEventMouseButton
@@ -186,9 +177,4 @@ func _clockwise(start: float, end: float) -> Dictionary:
 
 
 func _on_event_name_set() -> void:
-	# In here, the difference will be only in event
-	var old = as_transition_view()
-	var new = as_transition_view()
-	old["event"] = _prev_event_name
-	_prev_event_name = $EventName.text
-	transition_changed.emit(old, new)
+	transition_property_changed.emit(_id, "event", get_event_name())

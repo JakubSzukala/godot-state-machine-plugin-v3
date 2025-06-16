@@ -10,10 +10,15 @@ var graph: = FsmGraph.new()
 
 var fsm: FSM
 
-# TODO: _update_property to handle changes from outside
-# TODO: Make graph into an interface which will gather scattered data from
-# nodes and transitions (their changes in data) and merge them so dock can then
-# put them into improved transition data (view and model together)
+# TODO: Allow deletion of transitions from graph
+# TODO: On name change, don't get rid of transitions
+# TODO: Maybe instead of doing this janky prev/new updates in signals, we could
+# do some enum with indication of which property changed, this way we would
+# develop some ad hoc communication protocol between FSM entities
+# TODO: Add ID mechanism, which may be used by graph to reference states/transitions
+# transitions are hard to track because their properties may change, in theory
+# arbitraly, so assign ID and track it. Then we can emit transition ID and enum
+# with property changed
 
 func _init() -> void:
 	add_child(root_control)
@@ -29,6 +34,7 @@ func _ready() -> void:
 	fsm = get_edited_object()
 	fsm.sync()
 	graph.state_modified.connect(_on_state_modified)
+	graph.transition_property_changed.connect(_on_transition_property_changed)
 	_place()
 
 
@@ -42,12 +48,12 @@ func _update_property() -> void:
 func _place() -> void:
 	# First put states
 	for state in fsm.transitions:
-		graph.add_state_node(state)
+		graph.place_state_node(state)
 
 	# Then iterate again, now placing transitions between existing nodes
 	for state in fsm.transitions:
 		for transition in state["transitions"]:
-			graph.add_transition_node(transition)
+			graph.place_transition_node(transition)
 
 
 func _clear() -> void:
@@ -74,3 +80,11 @@ func _on_state_modified(full_state_view: Dictionary) -> void:
 		if fsm.transitions[i]["name"] == full_state_view["name"]:
 			fsm.transitions[i] = full_state_view
 			return
+
+
+func _on_transition_property_changed(id: int, property: String, value: Variant) -> void:
+	# That's pretty disgusting...
+	for i in range(fsm.transitions.size()):
+		for j in range(fsm.transitions[i]["transitions"].size()):
+			if fsm.transitions[i]["transitions"][j]["id"] == id:
+				fsm.transitions[i]["transitions"][j][property] = value

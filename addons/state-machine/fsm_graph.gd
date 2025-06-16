@@ -3,35 +3,38 @@ class_name FsmGraph
 extends Control
 
 signal state_modified(full_state_view: Dictionary)
+signal transition_property_changed(id: int, property: String, value: Variant)
 
 var fsm_state_node_scn: = preload("res://addons/state-machine/fsm_state_node.tscn")
 var fsm_transition_scn: = preload("res://addons/state-machine/fsm_transition.tscn")
 var fsm_dummy_state_node_scn = preload("res://addons/state-machine/fsm_dummy_state_node.tscn")
 
 var dragging_transition: FsmTransition = null
+var current_id: int
 
 
-func add_state_node(state_view: Dictionary) -> void:
+func place_state_node(state_view: Dictionary) -> void:
 	var state_node: FsmStateNode = fsm_state_node_scn.instantiate()
+	add_child(state_node, true)
 	state_node.set_state_name(state_view["name"])
 	state_node.position = state_view["position"]
-	add_child(state_node, true)
 	state_node.transition_drag_started.connect(_on_transition_drag_started)
 	state_node.transition_drag_finished.connect(_on_transition_drag_finished)
 	state_node.state_node_position_changed.connect(_on_state_node_position_changed)
 
 
-func add_transition_node(transition_view: Dictionary) -> void:
+func place_transition_node(transition_view: Dictionary) -> void:
 	var fsm_transition: FsmTransition = fsm_transition_scn.instantiate()
+	add_child(fsm_transition)
 	var from_node = _get_state_node(transition_view["from"])
 	var to_node = _get_state_node(transition_view["to"])
 	assert(from_node and to_node)
+	fsm_transition.set_id(transition_view["id"])
 	fsm_transition.set_from_node(from_node)
 	fsm_transition.set_event_name(transition_view["event"])
 	fsm_transition.set_to_node(to_node)
 	fsm_transition.set_r_scale(transition_view["r_scale"])
-	fsm_transition.transition_changed.connect(_on_transition_changed)
-	add_child(fsm_transition)
+	fsm_transition.transition_property_changed.connect(_on_transition_property_changed)
 
 
 func clear() -> void:
@@ -85,13 +88,18 @@ func _get_full_state_view(node_name: String) -> Dictionary:
 
 
 func _on_transition_drag_started(state_node: FsmStateNode) -> void:
-	dragging_transition = fsm_transition_scn.instantiate() as FsmTransition
+	# Create dummy to serve as "to" node
 	var dummy: FSMDummyStateNode = fsm_dummy_state_node_scn.instantiate()
+	add_child(dummy)
+
+	# Create transition
+	var id = (Time.get_unix_time_from_system() * 1000.0) as int
+	dragging_transition = fsm_transition_scn.instantiate() as FsmTransition
+	dragging_transition.set_id(id)
 	dragging_transition.set_from_node(state_node)
 	dragging_transition.set_to_node(dummy)
-	dragging_transition.transition_changed.connect(_on_transition_changed)
+	dragging_transition.transition_property_changed.connect(_on_transition_property_changed)
 	add_child(dragging_transition)
-	add_child(dummy)
 
 
 func _on_transition_drag_finished(state_node: FsmStateNode) -> void:
@@ -105,17 +113,8 @@ func _on_transition_drag_finished(state_node: FsmStateNode) -> void:
 	dragging_transition = null
 
 
-func _on_transition_changed(prev: Dictionary, new: Dictionary) -> void:
-	if FsmTransition.logically_equal(prev, new):
-		return
-
-	# TODO: This is pretty clunky, the way it is handled in
-	# _on_state_node_position_changed seems better i.e. we don't need all the
-	# data, we just need affected state nodes and we can extract the rest
-
-	if prev["from"] != new["from"]:
-		state_modified.emit(_get_full_state_view(prev["from"]))
-	state_modified.emit(_get_full_state_view(new["from"]))
+func _on_transition_property_changed(id: int, property: String, value: Variant) -> void:
+	transition_property_changed.emit(id, property, value)
 
 
 func _on_state_node_position_changed(state_node_name: String, _position: Vector2) -> void:
