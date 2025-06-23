@@ -35,6 +35,7 @@ func _ready() -> void:
 	fsm.sync()
 	graph.state_modified.connect(_on_state_modified)
 	graph.transition_property_changed.connect(_on_transition_property_changed)
+	graph.transition_deletion_requested.connect(_on_transition_deletion_requested)
 	_place()
 
 
@@ -88,3 +89,13 @@ func _on_transition_property_changed(id: int, property: String, value: Variant) 
 		for j in range(fsm.transitions[i]["transitions"].size()):
 			if fsm.transitions[i]["transitions"][j]["id"] == id:
 				fsm.transitions[i]["transitions"][j][property] = value
+				return
+
+
+func _on_transition_deletion_requested(id: int) -> void:
+	# Again...
+	for i in range(fsm.transitions.size()):
+		for j in range(fsm.transitions[i]["transitions"].size()):
+			if fsm.transitions[i]["transitions"][j]["id"] == id:
+				fsm.transitions[i]["transitions"].remove_at(j)
+				return

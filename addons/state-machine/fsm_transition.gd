@@ -3,7 +3,7 @@ class_name FsmTransition
 extends ColorRect
 
 signal transition_property_changed(id: int, property: String, value: Variant)
-signal deletion_requested(id: int) # TODO
+signal deletion_requested(id: int)
 
 var _id: int
 var _from_node: FsmStateNode
@@ -23,11 +23,11 @@ var _r: float
 # data that we want to expose and to monitor changes to properties
 
 func set_id(id: int) -> void:
-	_id = id;
+	_id = id
 
 
 func get_id() -> int:
-	return _id;
+	return _id
 
 
 func set_from_node(new_node: FsmStateNode) -> void:
@@ -104,16 +104,24 @@ func _input(event: InputEvent):
 	if not has_focus():
 		return
 
-	var mouse_button_event: = event as InputEventMouseButton
-	if not mouse_button_event:
-		return
+	# Handle deletion request
+	var keyboard_event: = event as InputEventKey
+	if keyboard_event and keyboard_event.keycode == KEY_DELETE:
+		# NOTE: If we don't mark it as handled it will be propagated to Node Tree
+		# UI and editor will try to delete FSM node
+		get_viewport().set_input_as_handled()
+		deletion_requested.emit(_id)
 
-	# TODO: Adding const value here feels pretty janky, in future we could use
-	# some function with very low values near 0.5 and high values further _from it
-	if mouse_button_event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
-		_r_scale = _r_scale + 0.01
-	elif mouse_button_event.button_index == MOUSE_BUTTON_WHEEL_UP:
-		_r_scale = _r_scale - 0.01
+
+	# Handle radius resize
+	var mouse_button_event: = event as InputEventMouseButton
+	if mouse_button_event:
+		# TODO: Adding const value here feels pretty janky, in future we could use
+		# some function with very low values near 0.5 and high values further _from it
+		if mouse_button_event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			_r_scale = _r_scale + 0.01
+		elif mouse_button_event.button_index == MOUSE_BUTTON_WHEEL_UP:
+			_r_scale = _r_scale - 0.01
 
 
 func _process(_delta: float) -> void:
