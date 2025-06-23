@@ -3,10 +3,32 @@ class_name FSM
 extends Node
 
 @export var transitions: Array[Dictionary]
+var runtime_transitions = {}
+@export var current_state: FSMState
 
 func _ready() -> void:
-	child_entered_tree.connect(_on_child_entered_tree)
-	child_exiting_tree.connect(_on_child_exiting_tree)
+	if Engine.is_editor_hint():
+		child_entered_tree.connect(_on_child_entered_tree)
+		child_exiting_tree.connect(_on_child_exiting_tree)
+
+	for state in transitions:
+		for transition in state["transitions"]:
+			var key = state["name"] + "/" + transition["event"]
+			var value = transition["to"]
+			runtime_transitions[key] = value
+
+
+func input_event(event: String) -> void:
+	var key = current_state.name + "/" + event
+	var new_state_name = runtime_transitions[key]
+
+	for state in get_states():
+		if state.name == new_state_name:
+			current_state = state
+
+
+func _process(delta: float) -> void:
+	current_state.state_process(delta)
 
 
 func get_states() -> Array:
