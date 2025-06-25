@@ -11,7 +11,6 @@ var fsm_transition_scn: = preload("res://addons/state-machine/fsm_transition.tsc
 var fsm_dummy_state_node_scn = preload("res://addons/state-machine/fsm_dummy_state_node.tscn")
 
 var dragging_transition: FsmTransition = null
-var current_id: int
 
 
 func place_state_node(state_view: Dictionary) -> void:
@@ -42,24 +41,6 @@ func place_transition_node(transition_view: Dictionary) -> void:
 func clear() -> void:
 	for child in get_children():
 		child.free()
-
-
-func get_state_views() -> Array[Dictionary]:
-	var output: Array[Dictionary] = []
-	for state in _get_state_nodes():
-		var state_view = {
-			"name" : state.get_state_name(),
-			"position" : state.position
-		}
-		output.append(state_view)
-	return output
-
-
-func get_transition_views() -> Array[Dictionary]:
-	var output: Array[Dictionary] = []
-	for transition in _get_transition_nodes():
-		output.append(transition.as_transition_view())
-	return output
 
 
 func _get_state_node(node_name: String) -> FsmStateNode:

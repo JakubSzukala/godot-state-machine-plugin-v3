@@ -10,15 +10,7 @@ var graph: = FsmGraph.new()
 
 var fsm: FSM
 
-# TODO: Allow deletion of transitions from graph
 # TODO: On name change, don't get rid of transitions
-# TODO: Maybe instead of doing this janky prev/new updates in signals, we could
-# do some enum with indication of which property changed, this way we would
-# develop some ad hoc communication protocol between FSM entities
-# TODO: Add ID mechanism, which may be used by graph to reference states/transitions
-# transitions are hard to track because their properties may change, in theory
-# arbitraly, so assign ID and track it. Then we can emit transition ID and enum
-# with property changed
 
 func _init() -> void:
 	add_child(root_control)
@@ -40,12 +32,11 @@ func _ready() -> void:
 
 
 func _update_property() -> void:
-	fsm.sync()
 	_clear()
+	fsm.sync()
 	_place()
 
 
-## Source of truth are child states in edited FSM
 func _place() -> void:
 	# First put states
 	for state in fsm.transitions:
@@ -59,21 +50,6 @@ func _place() -> void:
 
 func _clear() -> void:
 	graph.clear()
-
-
-## Conversion from transtion to transition view. Note r_scale is always 1.0,
-## because that information is not contained inside transition
-func _to_transition_view(transition_key: String, transition_value: String) -> Dictionary:
-	var split = transition_key.split("/")
-	var from_node_name: String = split[0]
-	var event_name: String = split[1]
-	var to_node_name: String = transition_value
-	return {
-		"from" : from_node_name,
-		"event" : event_name,
-		"to" : to_node_name,
-		"r_scale" : 1.0
-	}
 
 
 func _on_state_modified(full_state_view: Dictionary) -> void:

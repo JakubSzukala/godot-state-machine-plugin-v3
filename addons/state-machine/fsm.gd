@@ -11,6 +11,7 @@ func _ready() -> void:
 		child_entered_tree.connect(_on_child_entered_tree)
 		child_exiting_tree.connect(_on_child_exiting_tree)
 
+	# TODO: This should be separate function and should be done in editor
 	for state in transitions:
 		for transition in state["transitions"]:
 			var key = state["name"] + "/" + transition["event"]
@@ -36,7 +37,7 @@ func get_states() -> Array:
 	return find_children("*", "FSMState", false, false)
 
 
-func get_state_names() -> Array:
+func _get_state_names() -> Array:
 	var names = []
 	for fsm_state in get_states():
 		names.append(fsm_state.name)
@@ -45,7 +46,7 @@ func get_state_names() -> Array:
 
 func sync() -> void:
 	# I know this is inefficient, but it's the simplest. Sue me
-	var state_names: = get_state_names()
+	var state_names: = _get_state_names()
 	var synced: Array[Dictionary]
 	for state in get_states():
 		# Fill in default state view

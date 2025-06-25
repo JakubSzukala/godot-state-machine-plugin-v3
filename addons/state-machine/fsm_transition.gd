@@ -22,6 +22,10 @@ var _r: float
 # NOTE: We expose so many setters and getters to hide quite tangled ways of getting
 # data that we want to expose and to monitor changes to properties
 
+func _ready() -> void:
+	$EventName.text_changed.connect(_on_event_name_set)
+
+
 func set_id(id: int) -> void:
 	_id = id
 
@@ -90,16 +94,6 @@ func as_transition_view() -> Dictionary:
 	}
 
 
-static func logically_equal(v1: Dictionary, v2: Dictionary) -> bool:
-	return v1["from"] == v2["from"] and \
-		v1["event"] == v2["event"] and \
-		v1["to"] == v2["to"]
-
-
-func _ready() -> void:
-	$EventName.text_changed.connect(_on_event_name_set)
-
-
 func _input(event: InputEvent):
 	if not has_focus():
 		return
@@ -166,7 +160,6 @@ func _draw() -> void:
 	angles = _equivalent_positive(angles["start"], angles["end"])
 	angles = _clockwise(angles["start"], angles["end"])
 	draw_arc(_center - global_position, _r, angles["start"], angles["end"], 1000, Color.AQUAMARINE, 1, true)
-	#draw_circle(_center - global_position, 5, Color.CORAL)
 
 
 func _equivalent_positive(start: float, end: float) -> Dictionary:
