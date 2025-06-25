@@ -28,7 +28,8 @@ func input_event(event: String) -> void:
 
 
 func _process(delta: float) -> void:
-	current_state.state_process(delta)
+	if not Engine.is_editor_hint():
+		current_state.state_process(delta)
 
 
 func get_states() -> Array:
