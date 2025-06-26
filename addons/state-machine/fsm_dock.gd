@@ -6,7 +6,7 @@ var fsm_state_node_scn: = preload("res://addons/state-machine/fsm_state_node.tsc
 var fsm_transition_scn: = preload("res://addons/state-machine/fsm_transition.tscn")
 
 var root_control: = Control.new()
-var graph: = FsmGraph.new()
+var graph: FSMGraph = FSMGraph.new()
 
 var fsm: FSM
 

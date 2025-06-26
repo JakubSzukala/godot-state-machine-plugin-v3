@@ -1,5 +1,5 @@
 @tool
-class_name FsmGraph
+class_name FSMGraph
 extends Control
 
 signal state_modified(full_state_view: Dictionary)
@@ -10,7 +10,7 @@ var fsm_state_node_scn: = preload("res://addons/state-machine/fsm_state_node.tsc
 var fsm_transition_scn: = preload("res://addons/state-machine/fsm_transition.tscn")
 var fsm_dummy_state_node_scn = preload("res://addons/state-machine/fsm_dummy_state_node.tscn")
 
-var dragging_transition: FsmTransition = null
+var dragging_transition: FSMTransition = null
 
 
 func place_state_node(state_view: Dictionary) -> void:
@@ -24,7 +24,7 @@ func place_state_node(state_view: Dictionary) -> void:
 
 
 func place_transition_node(transition_view: Dictionary) -> void:
-	var fsm_transition: FsmTransition = fsm_transition_scn.instantiate()
+	var fsm_transition: FSMTransition = fsm_transition_scn.instantiate()
 	add_child(fsm_transition)
 	var from_node = _get_state_node(transition_view["from"])
 	var to_node = _get_state_node(transition_view["to"])
@@ -53,11 +53,11 @@ func _get_state_nodes() -> Array:
 
 
 func _get_transition_nodes() -> Array:
-	return find_children("*", "FsmTransition", false, false)
+	return find_children("*", "FSMTransition", false, false)
 
 
-func _get_transition_node_by_id(id: int) -> FsmTransition:
-	for transition in _get_transition_nodes() as Array[FsmTransition]:
+func _get_transition_node_by_id(id: int) -> FSMTransition:
+	for transition in _get_transition_nodes() as Array[FSMTransition]:
 		if transition.get_id() == id:
 			return transition
 	return null
@@ -65,7 +65,7 @@ func _get_transition_node_by_id(id: int) -> FsmTransition:
 
 func _get_outgoing_transition_views(node_name: String) -> Array[Dictionary]:
 	var result: Array[Dictionary] = []
-	for transition in _get_transition_nodes() as Array[FsmTransition]:
+	for transition in _get_transition_nodes() as Array[FSMTransition]:
 		if transition.get_from_node_name() == node_name:
 			result.append(transition.as_transition_view())
 	return result
@@ -84,7 +84,7 @@ func _on_transition_drag_started(state_node: FsmStateNode) -> void:
 
 	# Create transition
 	var id = (Time.get_unix_time_from_system() * 1000.0) as int
-	dragging_transition = fsm_transition_scn.instantiate() as FsmTransition
+	dragging_transition = fsm_transition_scn.instantiate() as FSMTransition
 	dragging_transition.set_id(id)
 	dragging_transition.set_from_node(state_node)
 	dragging_transition.set_to_node(dummy)

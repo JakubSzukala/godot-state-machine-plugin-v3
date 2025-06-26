@@ -1,5 +1,5 @@
 @tool
-class_name FsmTransition
+class_name FSMTransition
 extends ColorRect
 
 signal transition_property_changed(id: int, property: String, value: Variant)
