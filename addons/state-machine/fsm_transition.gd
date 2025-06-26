@@ -6,7 +6,7 @@ signal transition_property_changed(id: int, property: String, value: Variant)
 signal deletion_requested(id: int)
 
 var _id: int
-var _from_node: FsmStateNode
+var _from_node: FSMStateNode
 var _to_node: Node
 var _r_scale: float = 1.0:
 	set(value):
@@ -34,7 +34,7 @@ func get_id() -> int:
 	return _id
 
 
-func set_from_node(new_node: FsmStateNode) -> void:
+func set_from_node(new_node: FSMStateNode) -> void:
 	_from_node = new_node
 	transition_property_changed.emit(_id, "from", _from_node.get_state_name())
 

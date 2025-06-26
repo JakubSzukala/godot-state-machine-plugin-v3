@@ -14,7 +14,7 @@ var dragging_transition: FSMTransition = null
 
 
 func place_state_node(state_view: Dictionary) -> void:
-	var state_node: FsmStateNode = fsm_state_node_scn.instantiate()
+	var state_node: FSMStateNode = fsm_state_node_scn.instantiate()
 	add_child(state_node, true)
 	state_node.set_state_name(state_view["name"])
 	state_node.position = state_view["position"]
@@ -43,13 +43,13 @@ func clear() -> void:
 		child.free()
 
 
-func _get_state_node(node_name: String) -> FsmStateNode:
-	var fsm_state_node: FsmStateNode = get_node(node_name)
+func _get_state_node(node_name: String) -> FSMStateNode:
+	var fsm_state_node: FSMStateNode = get_node(node_name)
 	return fsm_state_node
 
 
 func _get_state_nodes() -> Array:
-	return find_children("*", "FsmStateNode", false, false)
+	return find_children("*", "FSMStateNode", false, false)
 
 
 func _get_transition_nodes() -> Array:
@@ -77,7 +77,7 @@ func _get_full_state_view(node_name: String) -> Dictionary:
 	return node_view
 
 
-func _on_transition_drag_started(state_node: FsmStateNode) -> void:
+func _on_transition_drag_started(state_node: FSMStateNode) -> void:
 	# Create dummy to serve as "to" node
 	var dummy: FSMDummyStateNode = fsm_dummy_state_node_scn.instantiate()
 	add_child(dummy)
@@ -93,7 +93,7 @@ func _on_transition_drag_started(state_node: FsmStateNode) -> void:
 	add_child(dragging_transition)
 
 
-func _on_transition_drag_finished(state_node: FsmStateNode) -> void:
+func _on_transition_drag_finished(state_node: FSMStateNode) -> void:
 	dragging_transition.set_to_node(state_node)
 	find_children("*", "FSMDummyStateNode", false, false)[0].queue_free()
 

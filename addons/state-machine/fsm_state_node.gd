@@ -1,9 +1,9 @@
 @tool
-class_name FsmStateNode
+class_name FSMStateNode
 extends ColorRect
 
-signal transition_drag_started(state_node: FsmStateNode)
-signal transition_drag_finished(state_node: FsmStateNode)
+signal transition_drag_started(state_node: FSMStateNode)
+signal transition_drag_finished(state_node: FSMStateNode)
 signal state_node_position_changed(state_node_name: String, position: Vector2)
 
 var drag_mouse_offset = null
