@@ -18,6 +18,9 @@ var _from: Vector2
 var _to: Vector2
 var _center: Vector2
 var _r: float
+var _angles: Dictionary
+var _dash_shift: float = 0.0
+const _dash_increment = 0.1
 
 # NOTE: We expose so many setters and getters to hide quite tangled ways of getting
 # data that we want to expose and to monitor changes to properties
@@ -139,27 +142,44 @@ func _process(_delta: float) -> void:
 	# calculate angle between them, in the same coordinate space. We then
 	# calculate vector halfway between these angles and shift it back _to global
 	# coordinate system
-	var angles = {
+	_angles = {
 		"start" : (_from - _center).angle(),
 		"end"   : (_to - _center).angle()
 	}
-	angles = _equivalent_positive(angles["start"], angles["end"])
-	angles = _clockwise(angles["start"], angles["end"])
-	var mid_angle = 0.5 * (angles["end"] - angles["start"])
+	_angles = _equivalent_positive(_angles["start"], _angles["end"])
+	_angles = _clockwise(_angles["start"], _angles["end"])
+	var mid_angle = 0.5 * (_angles["end"] - _angles["start"])
 	var mid_vec: Vector2 = (_from - _center)
 	mid_vec = mid_vec.rotated(mid_angle)
 	global_position = mid_vec + _center - size / 2
+
+	# TODO: This is unsynchronized between transitions, which looks not great,
+	# maybe in the future we could solve that
+	# Advance dash
+	_angles["dash_start"] = _angles["start"] + _dash_shift - 1
+	_angles["dash_end"] = _angles["start"] + _dash_shift
+
+	# Clip it to ends of transition arc
+	_angles["dash_start"] = max(_angles["dash_start"], _angles["start"])
+	_angles["dash_start"] = min(_angles["dash_start"], _angles["end"])
+	_angles["dash_end"] = max(_angles["dash_end"], _angles["start"])
+	_angles["dash_end"] = min(_angles["dash_end"], _angles["end"])
+	
+	# Don't grow shift to infinity
+	_dash_shift += _dash_increment
+	if _dash_shift >= 2 * PI:
+		_dash_shift -= (2 * PI)
+
 	queue_redraw()
 
 
 func _draw() -> void:
-	var angles = {
-		"start" : (_from - _center).angle(),
-		"end"   : (_to - _center).angle()
-	}
-	angles = _equivalent_positive(angles["start"], angles["end"])
-	angles = _clockwise(angles["start"], angles["end"])
-	draw_arc(_center - global_position, _r, angles["start"], angles["end"], 1000, Color.AQUAMARINE, 1, true)
+	if _angles.has("start") and _angles.has("end"):
+		draw_arc(_center - global_position, _r, _angles["start"], _angles["end"],
+				1000, Color.AQUAMARINE, 1, true)
+	if _angles.has("dash_start") and _angles.has("dash_end"):
+		draw_arc(_center - global_position, _r, _angles["dash_start"], _angles["dash_end"],
+				1000, Color.INDIGO, 1, true)
 
 
 func _equivalent_positive(start: float, end: float) -> Dictionary:
