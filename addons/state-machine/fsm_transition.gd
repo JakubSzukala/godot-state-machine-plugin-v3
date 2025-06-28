@@ -39,7 +39,7 @@ func set_from_node(new_node: FSMStateNode) -> void:
 	transition_property_changed.emit(_id, "from", _from_node.get_state_name())
 
 
-func set_to_node(new_node: Node) -> void:
+func set_to_node(new_node) -> void:
 	_to_node = new_node
 	transition_property_changed.emit(_id, "to", _to_node.get_state_name())
 

@@ -11,6 +11,12 @@ var fsm_transition_scn: = preload("res://addons/state-machine/fsm_transition.tsc
 var fsm_dummy_state_node_scn = preload("res://addons/state-machine/fsm_dummy_state_node.tscn")
 
 var dragging_transition: FSMTransition = null
+var dummy: FSMDummyStateNode
+
+
+func _ready() -> void:
+	dummy = fsm_dummy_state_node_scn.instantiate()
+	add_child(dummy)
 
 
 func place_state_node(state_view: Dictionary) -> void:
@@ -39,7 +45,10 @@ func place_transition_node(transition_view: Dictionary) -> void:
 
 
 func clear() -> void:
-	for child in get_children():
+	# NOTE: We can't free all children because we also have dummy as a child
+	for child in _get_state_nodes():
+		child.free()
+	for child in _get_transition_nodes():
 		child.free()
 
 
@@ -78,10 +87,6 @@ func _get_full_state_view(node_name: String) -> Dictionary:
 
 
 func _on_transition_drag_started(state_node: FSMStateNode) -> void:
-	# Create dummy to serve as "to" node
-	var dummy: FSMDummyStateNode = fsm_dummy_state_node_scn.instantiate()
-	add_child(dummy)
-
 	# Create transition
 	var id = (Time.get_unix_time_from_system() * 1000.0) as int
 	dragging_transition = fsm_transition_scn.instantiate() as FSMTransition
@@ -95,13 +100,32 @@ func _on_transition_drag_started(state_node: FSMStateNode) -> void:
 
 func _on_transition_drag_finished(state_node: FSMStateNode) -> void:
 	dragging_transition.set_to_node(state_node)
-	find_children("*", "FSMDummyStateNode", false, false)[0].queue_free()
 
 	# Notify inspector plugin that node representation has changed
 	var from_node_name = dragging_transition.get_from_node_name()
 	state_modified.emit(_get_full_state_view(from_node_name))
 
 	dragging_transition = null
+
+
+func _input(event: InputEvent) -> void:
+	var event_mouse_button: = event as InputEventMouseButton
+	if not event_mouse_button:
+		return
+
+	# If dragging transition is connected to dummy node at this point, delete it
+	# This works because node captures transition drag finish before this is called
+	# I am not sure how robust this is
+	if _dragging_transition_not_connected(event_mouse_button):
+		dragging_transition.queue_free()
+		dragging_transition = null
+
+
+func _dragging_transition_not_connected(event: InputEventMouseButton) -> bool:
+	return event.button_index == MOUSE_BUTTON_RIGHT and \
+			not event.pressed and \
+			dragging_transition and \
+			dragging_transition.get_to_node_name() == FSMDummyStateNode.DUMMY_STATE_NAME
 
 
 func _on_transition_property_changed(id: int, property: String, value: Variant) -> void:
