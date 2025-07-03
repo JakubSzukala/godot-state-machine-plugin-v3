@@ -6,9 +6,9 @@ signal state_modified(full_state_view: Dictionary)
 signal transition_property_changed(id: int, property: String, value: Variant)
 signal transition_deletion_requested(id: int)
 
-var fsm_state_node_scn: = preload("res://addons/state-machine/fsm_state_node.tscn")
-var fsm_transition_scn: = preload("res://addons/state-machine/fsm_transition.tscn")
-var fsm_dummy_state_node_scn = preload("res://addons/state-machine/fsm_dummy_state_node.tscn")
+var fsm_state_node_scn: = preload("res://addons/fsm/fsm_state_node.tscn")
+var fsm_transition_scn: = preload("res://addons/fsm/fsm_transition.tscn")
+var fsm_dummy_state_node_scn = preload("res://addons/fsm/fsm_dummy_state_node.tscn")
 
 var dragging_transition: FSMTransition = null
 var dummy: FSMDummyStateNode

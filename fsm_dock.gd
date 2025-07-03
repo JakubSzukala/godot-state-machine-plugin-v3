@@ -2,8 +2,8 @@
 class_name FSMDock
 extends EditorProperty
 
-var fsm_state_node_scn: = preload("res://addons/state-machine/fsm_state_node.tscn")
-var fsm_transition_scn: = preload("res://addons/state-machine/fsm_transition.tscn")
+var fsm_state_node_scn: = preload("res://addons/fsm/fsm_state_node.tscn")
+var fsm_transition_scn: = preload("res://addons/fsm/fsm_transition.tscn")
 
 var root_control: = Control.new()
 var graph: FSMGraph = FSMGraph.new()
