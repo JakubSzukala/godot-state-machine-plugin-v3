@@ -1,9 +1,10 @@
 @tool
-class_name FsmStateNode
+class_name FSMStateNode
 extends ColorRect
 
-signal transition_drag_started(state_node: FsmStateNode)
-signal transition_drag_finished(state_node: FsmStateNode)
+signal transition_drag_started(state_node: FSMStateNode)
+signal transition_drag_finished(state_node: FSMStateNode)
+signal state_node_position_changed(state_node_name: String, position: Vector2)
 
 var drag_mouse_offset = null
 var mouse_inside: bool = false
@@ -15,11 +16,22 @@ func set_state_name(new_name: String) -> void:
 
 
 func get_state_name() -> String:
-	return name
+	return $Label.text
 
 
 func get_global_center() -> Vector2:
 	return global_position + size / 2
+
+
+func get_position() -> Vector2:
+	return position
+
+
+func as_state_view() -> Dictionary:
+	return {
+		"name" : get_state_name(),
+		"position" : get_position()
+	}
 
 
 func _ready() -> void:
@@ -61,3 +73,4 @@ func _process(_delta: float) -> void:
 	# Keep constant offset from the mouse while dragging
 	if drag_mouse_offset:
 		global_position = get_global_mouse_position() - drag_mouse_offset
+		state_node_position_changed.emit(name, position)

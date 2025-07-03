@@ -1,7 +1,0 @@
-[gd_scene load_steps=2 format=3 uid="uid://cjgj2svoakpjs"]
-
-[ext_resource type="Script" uid="uid://bcryn8lwf4jvl" path="res://addons/state-machine/fsm_state.gd" id="1_8dao0"]
-
-[node name="DummyState" type="Node"]
-script = ExtResource("1_8dao0")
-metadata/_custom_type_script = "uid://bcryn8lwf4jvl"

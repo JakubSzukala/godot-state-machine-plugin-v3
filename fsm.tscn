@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://bmn0myjrrlw4j"]
 
-[ext_resource type="Script" uid="uid://j5ey4g6t6apf" path="res://addons/state-machine/fsm.gd" id="1_0x6bt"]
+[ext_resource type="Script" uid="uid://j5ey4g6t6apf" path="res://fsm.gd" id="1_0x6bt"]
 
 [node name="Fsm" type="Node"]
 script = ExtResource("1_0x6bt")
