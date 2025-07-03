@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://es63blnicxor"]
 
-[ext_resource type="Script" uid="uid://doyjnaw53wpnr" path="res://addons/state-machine/fsm_transition.gd" id="1_wsrkh"]
+[ext_resource type="Script" uid="uid://doyjnaw53wpnr" path="res://fsm_transition.gd" id="1_wsrkh"]
 
 [node name="FsmTransition" type="ColorRect"]
 custom_minimum_size = Vector2(50, 50)

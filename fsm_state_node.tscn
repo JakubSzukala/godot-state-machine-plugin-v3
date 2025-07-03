@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://bcvdb8rnrn1hp"]
 
-[ext_resource type="Script" uid="uid://bf4cwuwyw41hv" path="res://addons/state-machine/fsm_state_node.gd" id="1_6dri0"]
+[ext_resource type="Script" uid="uid://bf4cwuwyw41hv" path="res://fsm_state_node.gd" id="1_6dri0"]
 
 [node name="FsmStateNode" type="ColorRect"]
 z_index = 1
