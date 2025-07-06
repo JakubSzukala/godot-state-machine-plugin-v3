@@ -16,7 +16,7 @@ func _init() -> void:
 	add_child(root_control)
 	set_bottom_editor(root_control)
 	add_focusable(root_control)
-	root_control.custom_minimum_size = Vector2(150, 550)
+	root_control.custom_minimum_size = Vector2(150, 1000)
 	root_control.set_anchors_and_offsets_preset(LayoutPreset.PRESET_FULL_RECT)
 	root_control.mouse_filter = Control.MOUSE_FILTER_PASS
 	root_control.add_child(graph)

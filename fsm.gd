@@ -12,6 +12,7 @@ func _ready() -> void:
 		child_exiting_tree.connect(_on_child_exiting_tree)
 
 	# TODO: This should be separate function and should be done in editor
+	# And it should map string to node, not string to string
 	for state in transitions:
 		for transition in state["transitions"]:
 			var key = state["name"] + "/" + transition["event"]
@@ -22,6 +23,9 @@ func _ready() -> void:
 func input_event(event: String) -> void:
 	var key = current_state.name + "/" + event
 	var new_state_name = runtime_transitions[key]
+
+	if new_state_name == current_state.name:
+		return
 
 	for state in get_states():
 		if state.name == new_state_name:
