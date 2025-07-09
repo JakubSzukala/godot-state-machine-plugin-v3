@@ -22,19 +22,28 @@ func _ready() -> void:
 
 func input_event(event: String) -> void:
 	var key = current_state.name + "/" + event
-	var new_state_name = runtime_transitions[key]
+	if not runtime_transitions.has(key):
+		return
 
+	var new_state_name = runtime_transitions[key]
 	if new_state_name == current_state.name:
 		return
 
 	for state in get_states():
 		if state.name == new_state_name:
+			current_state.state_exit()
 			current_state = state
+			current_state.state_enter()
 
 
 func _process(delta: float) -> void:
 	if not Engine.is_editor_hint():
 		current_state.state_process(delta)
+
+
+func _physics_process(delta: float) -> void:
+	if not Engine.is_editor_hint():
+		current_state.state_physics_process(delta)
 
 
 func get_states() -> Array:
