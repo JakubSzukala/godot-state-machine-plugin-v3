@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://chvp86x0p34kr"]
 
-[ext_resource type="Script" uid="uid://c3wilk0kciusa" path="res://fsm_dummy_state_node.gd" id="1_jl2n1"]
+[ext_resource type="Script" path="res://addons/fsm/fsm_dummy_state_node.gd" id="1_jl2n1"]
 
 [node name="FsmDummyStateNode" type="Control"]
 layout_mode = 3
