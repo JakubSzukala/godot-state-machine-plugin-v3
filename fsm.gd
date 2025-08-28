@@ -6,6 +6,7 @@ extends Node
 var runtime_transitions = {}
 @export var current_state: FSMState
 
+
 func _ready() -> void:
 	if Engine.is_editor_hint():
 		child_entered_tree.connect(_on_child_entered_tree)
@@ -18,6 +19,11 @@ func _ready() -> void:
 			var key = state["name"] + "/" + transition["event"]
 			var value = transition["to"]
 			runtime_transitions[key] = value
+
+
+func setup(args: Dictionary) -> void:
+	for state in get_states():
+		state.setup(args)
 
 
 func input_event(event: String) -> void:

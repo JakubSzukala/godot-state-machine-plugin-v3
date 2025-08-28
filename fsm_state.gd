@@ -1,6 +1,10 @@
 class_name FSMState
 extends Node
 
+func setup(args: Dictionary) -> void:
+	pass
+
+
 func state_enter() -> void:
 	pass
 
