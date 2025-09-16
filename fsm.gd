@@ -42,6 +42,10 @@ func input_event(event: String) -> void:
 			current_state.state_enter()
 
 
+func _on_signal_event(event: String) -> void:
+	input_event(event)
+
+
 func _process(delta: float) -> void:
 	if not Engine.is_editor_hint():
 		current_state.state_process(delta)

@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://dj4ol52v6u3ye"]
+
+[ext_resource type="Script" uid="uid://dbyj15jyl5hrv" path="res://addons/fsm/fsm_map_adapter.gd" id="1_brnwu"]
+
+[node name="FsmMapAdapter" type="Node"]
+script = ExtResource("1_brnwu")
